@@ -95,3 +95,7 @@ let person = { role: "admin", experience: 7, active: true, department: "IT" };
 
  person = { role: "admin", experience: 3, active: false, department: "Finance" };
  accessPrivileges(person);
+
+
+
+  // COMPLETED ASSIGNMENT

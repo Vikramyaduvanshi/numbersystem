@@ -1,3 +1,19 @@
+// questtion 11 
+
+// Traversing Objects with for...in
+
+let book = { title: "The Hobbit",
+     author: "J.R.R. Tolkien",
+      year: 1937 
+    };
+for(let i in book){
+    console.log(i +" : " + book[i])
+}
+
+
+// question no 15 
+// Dynamic Object Methods for Sentence Generation
+
 let sentenceBuilder ={
     subject:"The cat",
     verb:"is running",

@@ -1,0 +1,228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+
+    <style>
+        *{
+           
+            margin: 0px ;
+            padding: 0px;
+        }
+        body{
+          
+            background-color: rgb(245, 178, 191);
+        }
+
+nav{
+    box-shadow: 0 2px 4px 0 rgba(0,0,0,.2);
+    text-align: center;
+padding: 20px;
+background-color: rgb(238, 237, 202);
+font-family: "Playwrite DE Grund Guides", serif;
+  font-weight: 400;
+  font-style: normal
+  
+}
+
+section{
+    margin-top: 150px;
+display: grid;
+grid-template-columns: repeat(auto-fit, minmax(100px, 300px));
+justify-content: space-evenly;
+   
+}
+.box{
+   
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+   
+}
+.box button{
+   background-color: rgb(199, 238, 206);
+   border: 1px solid black;
+margin: 20px;
+width: 100px;
+padding: 10px;
+border-radius: 3px;
+}
+.box button:hover{
+    transition: all;
+
+    transition-duration: .5s;
+background-color: black;
+color: white;
+
+}
+li{
+    list-style: none;
+}
+#show{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(50px, 100px));
+    justify-content: space-evenly;
+    padding: 10px;
+
+}
+input{
+    margin: 10px;
+}
+    </style>
+</head>
+<body>
+    
+<nav>
+    <h2>Project : Plagiarism Checker for Student Assignments</h2>
+
+</nav>
+
+<section>
+
+<div class="box" >
+    <input type="text" name="name" id="name" placeholder="Student name" >
+<textarea name="textarea" id="textarea" cols="30" rows="10" placeholder="Enter you Assignment" style="text-align: center; border: 1px solid black;"></textarea>
+<button id="submit">submit Assignment</button>
+<li class="text1"></li>
+</div>
+
+
+<div  class="box">
+   
+     <div id="show"></div>
+    <h4>View similarity reports</h4>
+    <button id="similarity">Click Here</button>
+   
+</div>
+
+
+<div class="box">
+    <h4>Download list</h4>
+    <button id="download">Click Here</button>
+ </div>
+ 
+
+</section>
+
+
+</body>
+
+
+<script>
+function Convertobj(name, assignment){
+this.name=name;
+this.assignment=assignment;
+}
+
+let storedata = [];
+let stopwords = ["a", "an", "the", "is", "and", "or", "but", "in", "on", "at", "by", "for", "of", "to", "with", "as", "from", "that", "this", "it", "are", "was", "be", "has", "have", "had", "were", "will"];
+
+document.getElementById("submit").onclick = function () {
+    let str = document.getElementById("textarea").value;
+let name= document.getElementById("name").value;
+    let result = str.split(/[\s,]+/) 
+        .map(word => word.toLowerCase().replace(/[^a-z0-9]/g, "")) 
+        .filter(word => word.length > 0 && !stopwords.includes(word))
+
+let obj=new Convertobj(name, result)
+
+    storedata.push(obj);
+
+    document.getElementById("textarea").value = "";
+    document.getElementById("name").value = "";
+
+    const text1Element = document.getElementsByClassName("text1")[0];
+    if (text1Element) {
+        text1Element.innerHTML = "Submitted successfully";
+    } else {
+        console.log("Element with class 'text1' not found.");
+    }
+    
+
+}
+
+
+
+
+document.getElementById("similarity").onclick = function () {
+  let matrix = [];
+
+
+  for (let i = 0; i < storedata.length; i++) {
+    for (let j = i + 1; j < storedata.length; j++) {
+      let arr = [];
+      let count = 0;
+
+    
+      arr.push(storedata[i].name || `Assignment ${i + 1}`)
+      arr.push(storedata[j].name || `Assignment ${j + 1}`);
+
+      for (let k = 0; k < storedata[i].assignment.length; k++) {
+        for (let l = 0; l < storedata[j].assignment.length; l++) {
+          if (storedata[i].assignment[k] === storedata[j].assignment[l]) {
+            count++;
+          }
+        }
+      }
+
+    
+      let per = (count * 100) / storedata[i].assignment.length
+      arr.push(per);
+
+  
+      matrix.push(arr);
+    }
+  }
+
+  console.log(matrix);
+
+  for (let v of matrix) {
+    let li = document.createElement("li");
+    li.innerText = `${v[0]} and ${v[1]}: ${v[2].toFixed(2)}% similarity`
+    if (v[2] >= 80) {
+      li.style.backgroundColor = "red"
+    }
+
+    document.getElementById("show").appendChild(li)
+  }
+};
+
+
+function downloadArrayData(arrayData, fileName) {
+    
+    const dataStr = JSON.stringify(arrayData, null, 2); 
+
+ 
+    const blob = new Blob([dataStr], { type: "application/json" })
+
+
+    const downloadLink = document.createElement("a")
+
+    downloadLink.href = URL.createObjectURL(blob)
+
+    downloadLink.download = fileName; 
+
+
+    document.body.appendChild(downloadLink)
+    downloadLink.click();
+
+    document.body.removeChild(downloadLink)
+
+
+    URL.revokeObjectURL(downloadLink.href)
+}
+
+
+document.getElementById("download").onclick = function() {
+    downloadArrayData(storedata, "arrayData.json")
+};
+
+
+
+
+</script>
+
+</html>

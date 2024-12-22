@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    
+
+</body>
+
+<script>
+
+let books = [];
+
+function Book(title, author, isAvailable = true) {
+    this.title = title;
+    this.author = author;
+    this.isAvailable = isAvailable;
+}
+
+Book.prototype.add = function () {
+    books.push(this);
+    console.log(`${this.title} has been added successfully.`);
+};
+
+function Member(name) {
+    this.name = name;
+    this.borrowedBooks = [];
+}
+
+Member.prototype.borrow = function (book) {
+    if (this.borrowedBooks.length < 3) {
+        let obj = books.find((obj) => obj.isAvailable && obj.title === book.title);
+        if (obj) {
+            this.borrowedBooks.push(book.title);
+            obj.isAvailable = false;
+            console.log(`${this.name} borrowed the book: ${book.title}`);
+        } else {
+            console.log(`Sorry, ${book.title} is not available.`);
+        }
+    } else {
+        console.log(`Borrowing limit exceeded. You can borrow up to 3 books.`);
+    }
+};
+
+function PremiumMember(name) {
+    Member.call(this, name); 
+    this.specialCollectionAccess = true;
+}
+
+PremiumMember.prototype = Object.create(Member.prototype);
+PremiumMember.prototype.constructor = PremiumMember;
+
+PremiumMember.prototype.borrow = function (book) {
+    if (this.borrowedBooks.length < 5) {
+        
+        Member.prototype.borrow.call(this, book);
+    } else {
+        console.log(`Borrowing limit exceeded. You can borrow up to 5 books.`);
+    }
+};
+
+
+let book1 = new Book("The Gita", "Shrikrishna");
+let book2 = new Book("Ramayana", "Valmiki");
+let book3 = new Book("Mahabharata", "Vyasa");
+let book4 = new Book("Panchatantra", "Vishnu Sharma");
+
+book1.add();
+book2.add();
+book3.add();
+book4.add();
+
+let regularMember = new Member("Vikram");
+let premiumMember = new PremiumMember("Arjun");
+
+regularMember.borrow(book1); 
+regularMember.borrow(book2); 
+regularMember.borrow(book3); 
+regularMember.borrow(book4); 
+
+premiumMember.borrow(book1); 
+premiumMember.borrow(book2); 
+premiumMember.borrow(book3); 
+premiumMember.borrow(book4); 
+
+
+let borrowBookForArjun = premiumMember.borrow.bind(premiumMember, book1);
+borrowBookForArjun(); 
+
+
+
+
+</script>
+</html>
